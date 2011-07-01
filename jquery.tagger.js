@@ -1,6 +1,6 @@
 /*
-    Tagger Widget v1.0
-    Copyright (C) 2008 Chris Iufer (chris@iufer.com
+    Tagger Widget v1.1
+    Copyright (C) 2011 Chris Iufer (chris@iufer.com)
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -21,13 +21,12 @@
 	$.fn.addTag = function(v){
 		var r = v.split(',');
 		for(var i in r){
-			n = r[i].replace(/([^a-zA-Z0-9\s\-\_])|^\s|\s$/g, '');			
-			if(n == '') return false;
+			n = r[i].replace(/([^a-zA-Z0-9\s\-\_\.])|^\s|\s$/g, '');			
+			if(n == '') break;
 			var fn = $(this).data('name');
 			var i = $('<input type="hidden" />').attr('name',fn).val(n);
 			var t = $('<li />').text(n).addClass('tagName')
 				.click(function(){
-					// remove
 					var hidden = $(this).data('hidden');
 					$(hidden).remove();
 					$(this).remove();
@@ -36,33 +35,28 @@
 			var l = $(this).data('list');
 			$(l).append(t).append(i);
 		}
+		return this;
 	};
 	
 })(jQuery);
 
-$(document).ready(function(){
+jQuery(function(){
 	$('.tagger').each(function(i){
-		$(this).data('name', $(this).attr('name'));	
-		$(this).removeAttr('name');
-		var b = $('<button type="button">Add</button>').addClass('tagAdd')
+		$(this).data('name', $(this).attr('name'));		
+		var b = $('<button type="button" />').html('Add').addClass('tagAdd')
 			.click(function(){
 				var tagger = $(this).data('tagger');
-				$(tagger).addTag( $(tagger).val() );
-				$(tagger).val('');
-				$(tagger).stop();
+				$(tagger).addTag( $(tagger).val() ).val('');
 			})
 			.data('tagger', this);
 		var l = $('<ul />').addClass('tagList');
-		$(this).data('list', l);			
-		$(this).after(l).after(b);
+		$(this).data('list', l).after(l).after(b);
 	})
 	.bind('keypress', function(e){
 		if( 13 == e.keyCode){
-			//console.log(e.keyCode);
-			$(this).addTag( $(this).val() );
-			$(this).val('');
-			$(this).stop();
-			return false;
+			e.stopPropagation();
+			e.preventDefault();
+			$(this).addTag( $(this).val() ).val('');
 		}
 	});
 });
